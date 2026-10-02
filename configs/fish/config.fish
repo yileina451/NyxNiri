@@ -82,9 +82,9 @@ function ask_agy
 end
 
 # ==============================================================================
-# NyxNiri TUI Cheatsheet 助手 (唯一指令: nyxhelp)
+# Nyxuri TUI Cheatsheet 助手 (唯一指令: nyxhelp)
 # ==============================================================================
-function nyxhelp --description "NyxNiri Cheatsheet速查手册"
+function nyxhelp --description "Nyxuri Cheatsheet速查手册"
     set -l section ""
     if test (count $argv) -gt 0
         if test "$argv[1]" = "--section" -a (count $argv) -ge 2
@@ -97,21 +97,21 @@ function nyxhelp --description "NyxNiri Cheatsheet速查手册"
     switch "$section"
         case header
             echo ""
-            set_color -o cyan; echo "  ── NyxNiri Dotfiles 终端与桌面速查手册 ──"; set_color normal
+            set_color -o cyan; echo "  ── Nyxuri Dotfiles 终端与桌面速查手册 ──"; set_color normal
             echo ""
             return
         case cli
-            set_color -o magenta; echo "  NyxNiri CLI & 配置快照"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri                  "; set_color green; echo "-> 打开控制面板主菜单"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri install config   "; set_color green; echo "-> 只部署配置，不安装依赖或壁纸"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri update           "; set_color green; echo "-> 更新源码并选择是否部署配置"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri doctor           "; set_color green; echo "-> 检查依赖、组件和桌面状态"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri apps             "; set_color green; echo "-> 管理 Nautilus、Mission Center、Fcitx5 Rime"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri snapshot [备注]  "; set_color green; echo "-> 创建配置快照"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri snapshot delete  "; set_color green; echo "-> 选择并删除一个或多个快照"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri rollback [序号]  "; set_color green; echo "-> 恢复历史配置快照"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri list             "; set_color green; echo "-> 查看所有配置快照"; set_color normal
-            set_color -o yellow; echo -n "    nyxniri theme status     "; set_color green; echo "-> 查看当前深浅主题状态"; set_color normal
+            set_color -o magenta; echo "  Nyxuri CLI & 配置快照"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri                  "; set_color green; echo "-> 打开控制面板主菜单"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri install config   "; set_color green; echo "-> 只部署配置，不安装依赖或壁纸"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri update           "; set_color green; echo "-> 更新源码并选择是否部署配置"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri doctor           "; set_color green; echo "-> 检查依赖、组件和桌面状态"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri apps             "; set_color green; echo "-> 常用软件按类安装：Brave、Steam、微信、QQ 等"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri snapshot [备注]  "; set_color green; echo "-> 创建配置快照"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri snapshot delete  "; set_color green; echo "-> 选择并删除一个或多个快照"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri rollback [序号]  "; set_color green; echo "-> 恢复历史配置快照"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri list             "; set_color green; echo "-> 查看所有配置快照"; set_color normal
+            set_color -o yellow; echo -n "    nyxuri theme status     "; set_color green; echo "-> 查看当前深浅主题状态"; set_color normal
             return
         case proxy
             set_color -o magenta; echo "  网络代理控制"; set_color normal
@@ -125,7 +125,7 @@ function nyxhelp --description "NyxNiri Cheatsheet速查手册"
             set_color -o yellow; echo -n "    in [包名]                "; set_color green; echo "-> 安装软件包 (无参时自动开启 se 模糊搜索)"; set_color normal
             set_color -o yellow; echo -n "    se [关键字]              "; set_color green; echo "-> 模糊搜索软件包 (支持 aur/pac 前缀) 并 fzf 交互安装"; set_color normal
             set_color -o yellow; echo -n "    un [关键字]              "; set_color green; echo "-> 模糊搜索已安装包并 fzf 交互卸载"; set_color normal
-            set_color -o yellow; echo -n "    clean [--auto]           "; set_color green; echo "-> 扫描并清理大缓存与日志垃圾"; set_color normal
+            set_color -o yellow; echo -n "    clean [-n]               "; set_color green; echo "-> 扫描并清理缓存与日志，-n 只预览"; set_color normal
             return
         case keys bind keybindings
             set_color -o magenta; echo "  Niri 桌面核心快捷键"; set_color normal
@@ -167,7 +167,7 @@ function nyxhelp --description "NyxNiri Cheatsheet速查手册"
     # Interactive TUI mode (when fzf is present & in interactive shell)
     if command -v fzf &>/dev/null; and status is-interactive
         set -l choices \
-            "1. cli    NyxNiri CLI & 配置快照" \
+            "1. cli    Nyxuri CLI & 配置快照" \
             "2. proxy  网络代理控制 (Proxy)" \
             "3. pkg    包管理与缓存清理 (Shelly)" \
             "4. keys   Niri 桌面核心快捷键" \
@@ -186,52 +186,6 @@ function nyxhelp --description "NyxNiri Cheatsheet速查手册"
         end
     else
         nyxhelp --section all
-    end
-end
-
-# 私有包管理器感知助手 (Paru > Yay > Shelly > Pacman)
-function _nyxniri_pkg_helper
-    if command -v paru &>/dev/null
-        echo "paru"
-    else if command -v yay &>/dev/null
-        echo "yay"
-    else if command -v shelly &>/dev/null
-        echo "shelly"
-    else
-        echo "pacman"
-    end
-end
-
-# 私有搜索分流助手 (供 se 交互及 fzf change 动态 reload)
-function _nyxniri_se_search --argument-names query helper
-    set -l input (string trim -- "$query")
-    set -l parts (string split -n -m 1 " " -- "$input")
-    set -l cmd "$parts[1]"
-    set -l kw "$parts[2]"
-
-    switch "$cmd"
-        case aur
-            if test -n "$kw"
-                if test "$helper" = "paru" -o "$helper" = "yay"
-                    $helper -Ssq --aur "$kw" 2>/dev/null | awk '{print "[AUR] "$0}' || true
-                else if command -v paru &>/dev/null
-                    paru -Ssq --aur "$kw" 2>/dev/null | awk '{print "[AUR] "$0}' || true
-                else if command -v yay &>/dev/null
-                    yay -Ssq --aur "$kw" 2>/dev/null | awk '{print "[AUR] "$0}' || true
-                end
-            end
-        case pac repo
-            if test -n "$kw"
-                pacman -Slq | grep -i -- "$kw" | awk '{print "[PAC] "$0}' || true
-            else
-                pacman -Slq | awk '{print "[PAC] "$0}' || true
-            end
-        case '*'
-            if test -n "$input"
-                pacman -Slq | grep -i -- "$input" | awk '{print "[PAC] "$0}' || true
-            else
-                pacman -Slq | awk '{print "[PAC] "$0}' || true
-            end
     end
 end
 
@@ -256,6 +210,10 @@ if status is-interactive
     function fish_user_key_bindings
         # 绑定 Tab 键
         bind \t custom_tab_complete
+        # Ctrl+V 粘贴系统剪贴板（fzf.fish 默认把 Ctrl+V 占用为变量搜索，此处覆盖回粘贴；
+        # fish_user_key_bindings 在插件绑定之后执行，覆盖是时序保证的）
+        bind \cv fish_clipboard_paste
+        bind -M insert \cv fish_clipboard_paste
     end
 
     # Use starship prompt (Disable in pure TTY to avoid Nerd Font square boxes)
@@ -268,106 +226,26 @@ if status is-interactive
     alias celar "printf '\033[2J\033[3J\033[1;1H'"
     alias claer "printf '\033[2J\033[3J\033[1;1H'"
 
-    # 智能一键更新 (优先 paru/yay，自动防中途取消误触发)
     function up --description "一键系统与软件包更新 (Arch / CachyOS)"
-        set -l helper (_nyxniri_pkg_helper)
-        set -l res 0
-
-        switch "$helper"
-            case paru
-                paru -Syu $argv
-                set res $status
-            case yay
-                yay -Syu $argv
-                set res $status
-            case shelly
-                shelly upgrade all $argv
-                set res $status
-            case '*'
-                sudo pacman -Syu $argv
-                set res $status
-        end
-
-        # 用户按 Ctrl+C / SIGINT (130) 或 SIGTERM (143) 取消操作时，安静退出
-        if test $res -eq 130 -o $res -eq 143
-            set_color yellow; echo "[!] 更新操作已由用户取消"; set_color normal
-            return 130
-        end
-
-        if test $res -ne 0 -a "$helper" = "shelly"
-            set_color yellow; echo "[!] Shelly 更新遇到异常，尝试使用备用包管理器..."; set_color normal
-            if command -v paru &>/dev/null
-                paru -Syu $argv
-            else if command -v yay &>/dev/null
-                yay -Syu $argv
-            else
-                sudo pacman -Syu $argv
-            end
-        end
+        nyxuri pkg upgrade $argv
     end
-    alias update='up'                             # 同上，完整拼写
+    alias update='up'
 
-    # 智能安装 (无参自动触发 se 模糊搜索)
     function in --description "智能安装软件包 (支持包名或交互搜索)"
         if test (count $argv) -eq 0
             se
-            return
-        end
-
-        set -l helper (_nyxniri_pkg_helper)
-        set -l res 0
-
-        switch "$helper"
-            case paru
-                paru -S $argv
-                set res $status
-            case yay
-                yay -S $argv
-                set res $status
-            case shelly
-                shelly install $argv
-                set res $status
-            case '*'
-                sudo pacman -S $argv
-                set res $status
-        end
-
-        if test $res -eq 130 -o $res -eq 143
-            set_color yellow; echo "[!] 安装操作已由用户取消"; set_color normal
-            return 130
-        end
-
-        if test $res -ne 0 -a "$helper" = "shelly"
-            set_color yellow; echo "[!] Shelly 安装遇到异常，尝试使用备用包管理器..."; set_color normal
-            if command -v paru &>/dev/null
-                paru -S $argv
-            else if command -v yay &>/dev/null
-                yay -S $argv
-            else
-                sudo pacman -S $argv
-            end
+        else
+            nyxuri pkg install $argv
         end
     end
 
-    alias clean='~/.config/fish/clean-cache'      # 运行一键缓存清理脚本
+    alias clean='nyxuri clean'
+    alias nyxniri='nyxuri'
 
     # se：模糊搜索软件包 (支持 aur <kw> / pac <kw> 前缀) 并用 fzf 交互安装 (无 fzf 时自动降级)
-    function se --description "模糊搜索并安装软件包 (支持 aur <kw> / pac <kw> 前缀)"
-        set -l helper (_nyxniri_pkg_helper)
-
-        # 无 fzf 时的降级处理
+    function se --description "Fuzzy search & install packages (aur/pac prefix)"
         if not command -v fzf &>/dev/null
-            set_color yellow; echo "[!] 未检测到 fzf，切换至标准 CLI 搜索..."; set_color normal
-            switch "$helper"
-                case paru
-                    paru -Ss $argv
-                case yay
-                    yay -Ss $argv
-                case shelly
-                    shelly search $argv
-                case '*'
-                    pacman -Ss $argv
-            end
+            nyxuri pkg search $argv
             return
         end
 
@@ -377,25 +255,25 @@ if status is-interactive
             set fzf_query "$argv"
         end
 
-        set -l preview_cmd "pacman -Si {2}"
-        if test "$helper" = "paru"
-            set preview_cmd "paru -Si {2} 2>/dev/null || pacman -Si {2}"
-        else if test "$helper" = "yay"
-            set preview_cmd "yay -Si {2} 2>/dev/null || pacman -Si {2}"
-        end
+        set -l preview_cmd "nyxuri pkg info {2}"
 
-        set -l header_str "💡 搜索提示: 输入 'aur 关键字' 搜 AUR | 'pac 关键字' 搜官方源 | [Tab] 多选"
+        set -l header_str "aur <kw> → AUR | pac <kw> → repo | [Tab] multi-select"
 
-        set -l pkgs (_nyxniri_se_search "$fzf_query" "$helper" | fzf --multi --prompt='📦 包搜索 > ' \
+        set -l pkgs (nyxuri pkg search "$fzf_query" | fzf --multi --disabled --prompt='search > ' \
             --header="$header_str" \
             --query="$fzf_query" \
-            --bind 'change:reload(fish -c "_nyxniri_se_search {q} '$helper'")' \
+            --bind 'change:reload(nyxuri pkg search {q})' \
             --preview "$preview_cmd" --preview-window 'right:60%:wrap')
 
         if test -n "$pkgs"
             set -l clean_pkgs
             for p in $pkgs
-                set -a clean_pkgs (string replace -r '^\[.*?\]\s+' '' -- $p)
+                set -l name (string replace -r '^\[.*?\]\s+' '' -- $p)
+                if string match -q -r '^\[AUR\]' -- $p
+                    set -a clean_pkgs "aur/$name"
+                else
+                    set -a clean_pkgs "repo/$name"
+                end
             end
             if test -n "$clean_pkgs"
                 in $clean_pkgs
@@ -404,12 +282,10 @@ if status is-interactive
     end
 
     # un：模糊搜索已安装的包并用 fzf 交互卸载 (无 fzf 时自动降级)
-    function un --description "模糊搜索并卸载已安装软件包"
-        set -l helper (_nyxniri_pkg_helper)
-
+    function un --description "Fuzzy search & remove installed packages"
         if not command -v fzf &>/dev/null
-            set_color yellow; echo "[!] 未检测到 fzf，切换至标准已安装查询..."; set_color normal
-            pacman -Qs $argv
+            set_color yellow; echo "[!] fzf not found, falling back to installed list"; set_color normal
+            nyxuri pkg installed $argv
             return
         end
 
@@ -418,22 +294,13 @@ if status is-interactive
             set fzf_query "$argv"
         end
 
-        set -l pkgs (pacman -Qq | fzf --multi --prompt='🗑  卸载 > ' \
-            --header='[Tab] 多选 | [Enter] 确认卸载 | [Esc] 取消' \
+        set -l pkgs (nyxuri pkg installed | fzf --multi --prompt='remove > ' \
+            --header='[Tab] multi-select | [Enter] remove | [Esc] cancel' \
             --query="$fzf_query" \
-            --preview 'pacman -Qi {1}' --preview-window 'right:60%:wrap')
+            --preview 'nyxuri pkg info {1}' --preview-window 'right:60%:wrap')
 
         if test -n "$pkgs"
-            switch "$helper"
-                case paru
-                    paru -Rns $pkgs
-                case yay
-                    yay -Rns $pkgs
-                case shelly
-                    shelly remove standard $pkgs
-                case '*'
-                    sudo pacman -Rns $pkgs
-            end
+            nyxuri pkg remove $pkgs
         end
     end
     

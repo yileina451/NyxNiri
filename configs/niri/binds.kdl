@@ -21,14 +21,14 @@ binds {
     // 重新加载 Niri 配置文件 / Reload Niri configuration file
     Mod+Shift+R { spawn "niri" "msg" "action" "load-config-file"; }
 
-    // 锁定屏幕 (使用 Noctalia 原生锁屏) / Lock screen using Noctalia native lockscreen
-    Mod+L { spawn "noctalia" "msg" "session" "lock"; }
+    // 锁定屏幕 (外壳网关) / Lock screen using shell gateway
+    Mod+L { spawn "~/.config/niri/scripts/shell-action.sh" "lock"; }
 
     // 显示快捷键提示覆盖层 / Show interactive hotkey overlay
     Mod+Slash { show-hotkey-overlay; }
 
     // -------------------------------------------------------------------------
-    // 2. 应用启动与 Noctalia 组件 / App Launchers & Noctalia Panels
+    // 2. 应用启动与桌面外壳组件 / App Launchers & Shell Components
     // -------------------------------------------------------------------------
     // 启动终端模拟器 (Kitty) / Launch terminal emulator (Kitty)
     Mod+Return { spawn "kitty"; }
@@ -36,23 +36,23 @@ binds {
     // 启动文件管理器 (Nautilus) / Launch file manager (Nautilus)
     Mod+E { spawn "nautilus"; }
 
-    // 切换 Noctalia 应用启动器 / Toggle Noctalia application launcher
-    Mod+R { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    // 切换应用启动器 (外壳网关) / Toggle shell application launcher
+    Mod+R { spawn "~/.config/niri/scripts/shell-action.sh" "launcher"; }
 
-    // 切换 Noctalia 电源/会话菜单 / Toggle Noctalia power/session menu
-    Mod+X { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    // 切换电源/会话菜单 (外壳网关) / Toggle shell power/session menu
+    Mod+X { spawn "~/.config/niri/scripts/shell-action.sh" "session"; }
 
-    // 切换 Noctalia 系统设置面板 / Toggle Noctalia system settings panel
-    Mod+I { spawn "noctalia" "msg" "settings-toggle"; }
+    // 切换系统设置面板 (外壳网关) / Toggle shell system settings panel
+    Mod+I { spawn "~/.config/niri/scripts/shell-action.sh" "settings"; }
 
-    // 切换 Noctalia 剪贴板历史 / Toggle Noctalia clipboard history panel
-    Mod+V { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    // 切换剪贴板历史 (外壳网关) / Toggle shell clipboard history panel
+    Mod+V { spawn "~/.config/niri/scripts/shell-action.sh" "clipboard"; }
 
-    // 呼出 M3E 原生壁纸选择器 (聚合静态/动态壁纸/搜索/分类) / Open M3E wallpaper picker (Static & Live)
-    Mod+W repeat=false { spawn "~/.config/niri/scripts/wallpaper-picker.py"; }
+    // 呼出 M3E 原生壁纸选择器 (聚合静态/动态壁纸/搜索/分类) (外壳网关) / Open M3E wallpaper picker (Static & Live)
+    Mod+W repeat=false { spawn "~/.config/niri/scripts/shell-action.sh" "wallpaper-picker"; }
 
-    // 免打扰随机切换下一张壁纸 (主题取色自动跟随更新) / Switch to a random wallpaper immediately
-    Mod+Ctrl+W { spawn "noctalia" "msg" "wallpaper-random"; }
+    // 免打扰随机切换下一张壁纸 (外壳网关) / Switch to a random wallpaper immediately
+    Mod+Ctrl+W { spawn "~/.config/niri/scripts/shell-action.sh" "wallpaper-random"; }
 
     // 切换护眼模式 (调暖色温并关闭透明度/毛玻璃) / Toggle eye-care mode (warmer temp & disable blur/transparency)
     Mod+N { spawn "~/.config/niri/scripts/toggle-eyecare.sh"; }
@@ -60,9 +60,9 @@ binds {
     // 快速切换 Kitty 专属 Scratchpad 终端 / Toggle Kitty scratchpad terminal
     Mod+Grave { spawn "~/.config/niri/scripts/niri-scratch-toggle.sh" "kitty"; }
 
-    // 呼出 Orbit Launcher M3E 矢量星环启动器 (按住 Super 点鼠标前侧键，或键盘 Mod+A) / Open Orbit Launcher M3E radial menu
-    Mod+A repeat=false { spawn "~/.config/niri/scripts/orbit-launcher.py"; }
-    Mod+MouseForward repeat=false { spawn "~/.config/niri/scripts/orbit-launcher.py"; }
+    // 呼出 Orbit Launcher M3E 矢量星环启动器 (外壳网关) / Open Orbit Launcher M3E radial menu
+    Mod+A repeat=false { spawn "~/.config/niri/scripts/shell-action.sh" "radial-launcher"; }
+    Mod+MouseForward repeat=false { spawn "~/.config/niri/scripts/shell-action.sh" "radial-launcher"; }
 
     // -------------------------------------------------------------------------
     // 3. 焦点导航与窗口移动 / Focus Navigation & Window Movement
@@ -183,13 +183,13 @@ binds {
     // 7. 多媒体与硬件控制 / Multimedia & Hardware Control
     // -------------------------------------------------------------------------
     // 音量加 / 减 / 静音 (WirePlumber) / Volume Up / Down / Mute via WirePlumber
-    XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
-    XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
-    XF86AudioMute        { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
 
-    // 外接显示器硬件亮度调节 (ddcutil, 允许锁屏状态下生效) / DDC monitor brightness control (allow when locked)
-    XF86MonBrightnessUp   allow-when-locked=true { spawn "sh" "-c" "ddcutil setvcp 10 + 10"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "sh" "-c" "ddcutil setvcp 10 - 10"; }
+    // 亮度：内屏走 Noctalia 背光+OSD，外接屏保留 ddcutil（Noctalia 默认关闭 DDC 扫描）
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "~/.config/niri/scripts/niri-brightness.sh" "up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "~/.config/niri/scripts/niri-brightness.sh" "down"; }
 
     // -------------------------------------------------------------------------
     // 8. 截图按键控制 / Screenshot Controls

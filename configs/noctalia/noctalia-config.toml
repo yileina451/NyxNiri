@@ -21,25 +21,36 @@ capsule_thickness = 0.95999998226761818
 enabled = true
 panel_overlap = 12
 font_family = "JetBrains Mono"
+font_weight = 600
 margin_ends = 14
 margin_edge = 10
 scale = 1.1
 shadow = false
 end = [
     "media",
-    "tray",
-    "wallpaper",
-    "mpvpaper",
     "volume",
+    "tray",
     "notifications",
     "session",
 ]
 center = ["clock"]
-start = ["launcher", "workspaces", "active_window"]
+start = ["launcher", "workspaces", "group:g1"]
 thickness = 36
 
-[battery.device."/org/freedesktop/UPower/devices/battery_hidpp_battery_0"]
-warning_threshold = 30
+[[bar.bar.capsule_group]]
+accordion = false
+accordion_direction = "end"
+border = "outline"
+enabled = true
+fill = "surface_variant"
+foreground = "secondary"
+id = "g1"
+members = ["sysmon", "ram"]
+opacity = 0.79
+padding = 10.0
+radius = 80.0
+widget_spacing = 12
+
 
 [brightness]
 enable_ddcutil = false
@@ -51,7 +62,7 @@ widget_order = ["desktop-widget-0000000000000003"]
 [desktop_widgets.grid]
 cell_size = 16
 major_interval = 4
-visible = true
+visible = false
 
 [desktop_widgets.widget.desktop-widget-0000000000000003]
 box_height = 0.0
@@ -93,7 +104,7 @@ behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
     timeout = 360.0
 
 [hooks]
-theme_mode_changed = ["~/.config/noctalia/theme-sync.sh"]
+theme_mode_changed = "nyxuri theme sync"
 wallpaper_changed = ["~/.config/noctalia/wallpaper-hook.sh"]
 
 [hot_corners.bottom_right]
@@ -200,7 +211,7 @@ builtin_ids = ["kitty", "qt", "starship"]
 community_ids = []
 
 # NyxMellow 动态 fcitx5 皮肤（mellow 形状 + Material You 自动取色）
-# 路径中的 /home/user 为占位符，由 nyxniri.deploy 在部署时替换为实际 $HOME
+# 路径中的 /home/user 为占位符，由 nyxuri.deploy 在部署时替换为实际 $HOME
 [theme.templates.user.nyxmellow_theme]
 index = 0
 input_path = "/home/user/.local/share/fcitx5/themes/nyxmellow/templates/theme.conf"
@@ -215,19 +226,31 @@ output_path = "/home/user/.local/share/fcitx5/themes/nyxmellow/panel.svg"
 index = 2
 input_path = "/home/user/.local/share/fcitx5/themes/nyxmellow/templates/highlight.svg"
 output_path = "/home/user/.local/share/fcitx5/themes/nyxmellow/highlight.svg"
-post_hook = "if pgrep -x fcitx5 >/dev/null 2>&1; then pkill -x fcitx5; sleep 1; fcitx5 -d >/dev/null 2>&1 & fi"
+post_hook = "busctl --user --auto-start=no call org.fcitx.Fcitx5 /controller org.fcitx.Fcitx.Controller1 ReloadAddonConfig s classicui >/dev/null 2>&1 || true"
 
 # GTK Material You 主题（移植自 HyprYou，由 Noctalia 动态渲染到 gtk.css）
-# 路径中的 /home/user 为占位符，由 nyxniri.deploy 在部署时替换为实际 $HOME
-[theme.templates.user.nyxniri_gtk3]
+# 路径中的 /home/user 为占位符，由 nyxuri.deploy 在部署时替换为实际 $HOME
+[theme.templates.user.nyxuri_gtk3]
 index = 3
 input_path = "/home/user/.config/noctalia/templates/gtk-3.0.css"
 output_path = "/home/user/.config/gtk-3.0/gtk.css"
 
-[theme.templates.user.nyxniri_gtk4]
+[theme.templates.user.nyxuri_gtk4]
 index = 4
 input_path = "/home/user/.config/noctalia/templates/gtk-4.0.css"
 output_path = "/home/user/.config/gtk-4.0/gtk.css"
+
+# Niri glow-material-you: Noctalia is the only writer of the rendered layout.
+[theme.templates.user.nyxuri_niri_glow_material_you]
+index = 5
+input_path = "/home/user/.config/noctalia/templates/niri-glow-material-you.kdl"
+output_path = "/home/user/.config/niri/colors.kdl"
+
+# Material You 动态色板（由 Noctalia 渲染到 ~/.cache/nyxuri/palette.toml，供周边组件直接读取）
+[theme.templates.user.palette]
+index = 6
+input_path = "/home/user/.config/noctalia/templates/palette.toml"
+output_path = "/home/user/.cache/nyxuri/palette.toml"
 
 [wallpaper]
 directory = "/home/user/图片/Wallpapers"
@@ -241,14 +264,23 @@ enabled = ["noctalia/mpvpaper"]
 min_length = 0
 
 [widget.clock]
-format = "{:%a, %d %b %H:%M}"
+format = "{:%m/%d/%y %H:%M}"
+
+[widget.media]
+hide_when_no_media = true
+max_length = 170
 
 [widget.tray]
 detached_panel = true
 drawer = true
 
-[widget."ray/echolyrics:echolyrics"]
-capsule = false
+[widget.ram]
+show_glyph = false
+visualization = "none"
+
+[widget.sysmon]
+glyph = "cpu"
+visualization = "none"
 
 [widget.mpvpaper]
 type = "noctalia/mpvpaper:mpvpaper"

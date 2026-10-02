@@ -1,10 +1,9 @@
-# NyxNiri Git Ignore Rules
+# Nyxuri Git Ignore Rules
 
 # Agent instructions & development notes
 example-widgets
 notes/
-/.codex/
-/.agents/
+
 
 # Python cache & bytecode
 __pycache__/

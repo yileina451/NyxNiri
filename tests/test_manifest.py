@@ -10,7 +10,7 @@ from pathlib import Path
 
 import tomllib
 
-import nyxniri.deploy.manifest as manifest
+import nyxuri.deploy.manifest as manifest
 from tests.utils import TempEnv
 
 
@@ -154,9 +154,11 @@ class TestRealRepoManifests(unittest.TestCase):
 
     def test_niri_manifest(self):
         m = manifest.load_manifest(self.env.configs_src / "niri")
-        self.assertEqual(m.preserve, ["monitor.kdl"])
-        self.assertEqual(m.chmod, ["scripts/*.sh"])
+        self.assertEqual(m.preserve, ["monitor.kdl", "effects.kdl", "effects_normal.kdl", "glow.kdl", "colors.kdl"])
+        self.assertEqual(m.chmod, ["scripts/*.sh", "scripts/*.py"])
         self.assertTrue(m.is_deployable)
+        self.assertIn("effects", m.parts)
+        self.assertIn("glow", m.parts)
         # dir name = package = binary → no [packages] override needed
         self.assertEqual(m.packages_repo, ["niri"])
 
@@ -212,6 +214,139 @@ class TestRealRepoManifests(unittest.TestCase):
         self.assertEqual(m.packages_aur, ["rime-ice-git"])
         self.assertIn("fcitx5-rime", m.packages_repo)
         self.assertTrue(m.is_optional)
+        self.assertEqual(m.post_install, "fcitx:setup_rime_ice")
+
+    def test_zed_dual_axis_merge(self):
+        # zed ships config AND registers in .optional-apps.toml (§2 coexistence):
+        # deployability comes from the dir, optional-axis fields from the toml.
+        manifests = dict(manifest.discover_manifest_apps())
+        m = manifests["zed"]
+        self.assertTrue(m.is_optional)
+        self.assertTrue(m.is_deployable)
+        self.assertEqual(m.category, "dev")
+        self.assertEqual(m.packages_repo, ["zed"])
+        self.assertEqual(m.detect, "zed")
+        self.assertIn("zed", manifest.discover_optional_apps())
+        self.assertIn("zed", manifest.discover_deployable_apps())
+
+    def test_flatpak_only_apps_have_no_pacman_packages(self):
+        # qq/wechat/spotify install via Flathub. repo=[] must override the
+        # [<name>] default, or pacman would be handed a nonexistent package.
+        manifests = dict(manifest.discover_manifest_apps())
+        expected = {
+            "qq": ["com.qq.QQ"],
+            "wechat": ["com.tencent.WeChat"],
+            "spotify": ["com.spotify.Client"],
+        }
+        for name, ids in expected.items():
+            m = manifests[name]
+            self.assertEqual(m.packages_repo, [], f"{name} must declare repo = []")
+            self.assertEqual(m.packages_aur, [])
+            self.assertEqual(m.packages_flatpak, ids)
+            self.assertFalse(m.is_deployable)
+            self.assertTrue(m.is_optional)
+
+    def test_all_optional_apps_categorized(self):
+        known = {"browser", "office", "dev", "social", "media", "game",
+                 "video", "download", "proxy", "terminal", "system"}
+        for _name, m in manifest.discover_manifest_apps():
+            if m.is_optional:
+                self.assertIn(m.category, known, f"{_name} has unknown category")
+
+    def test_full_optional_catalog(self):
+        opts = manifest.discover_optional_apps()
+        for name in ("brave-origin", "libreoffice", "vscode", "zed", "wechat", "qq",
+                     "telegram", "spotify", "steam", "lutris", "protonplus", "kdenlive",
+                     "obs", "motrix", "flclash", "shelly", "nautilus", "missioncenter",
+                     "fcitx5-rime"):
+            self.assertIn(name, opts)
+
+
+    def test_real_niri_manifest_has_parts(self):
+        m = manifest.load_manifest_for("niri")
+        self.assertIn("effects", m.parts)
+        self.assertEqual(m.parts["effects"]["target"], "effects_normal.kdl")
+        self.assertIn("glow", m.parts)
+        self.assertEqual(m.parts["glow"]["target"], "glow.kdl")
+
+
+class TestManifestPresets(unittest.TestCase):
+    """Presets table parsing in .module.toml (whitelist/blacklist/inheritance)."""
+
+    def setUp(self):
+        self._ctx = TempEnv()
+        self._ctx.__enter__()
+        self.env = self._ctx.env
+        self._sandbox = tempfile.TemporaryDirectory()
+        self.env.configs_src = Path(self._sandbox.name)
+
+    def tearDown(self):
+        self._sandbox.cleanup()
+        self._ctx.__exit__()
+
+    def _mkdir(self, rel: str) -> Path:
+        d = self.env.configs_src / rel
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def test_no_presets_table_defaults_to_safe(self):
+        app = self._mkdir("myapp")
+        (app / "config.conf").write_text("# conf")
+        m = manifest.load_manifest(app)
+        self.assertFalse(m.preset_inherit)
+        self.assertEqual(m.preset_allow, [])
+        self.assertEqual(m.preset_standalone, [])
+        self.assertEqual(m.preset_include, [])
+        self.assertEqual(m.preset_exclude, [])
+
+    def test_presets_table_parsed_correctly(self):
+        app = self._mkdir("niri_test")
+        (app / "config.kdl").write_text("# conf")
+        (app / ".module.toml").write_text("""
+[packages]
+preserve = ["monitor.kdl"]
+
+[presets]
+inherit = true
+allow = ["glow", "compact"]
+standalone = ["isolated"]
+include = ["scripts/**", "*.kdl"]
+exclude = ["scripts/debug.sh"]
+""")
+        m = manifest.load_manifest(app)
+        self.assertTrue(m.preset_inherit)
+        self.assertEqual(m.preset_allow, ["glow", "compact"])
+        self.assertEqual(m.preset_standalone, ["isolated"])
+        self.assertEqual(m.preset_include, ["scripts/**", "*.kdl"])
+        self.assertEqual(m.preset_exclude, ["scripts/debug.sh"])
+
+    def test_parts_targets_auto_included_in_preserve(self):
+        app = self._mkdir("part_app")
+        (app / "config.kdl").write_text("# conf")
+        (app / ".module.toml").write_text("""
+[packages]
+preserve = ["explicit.kdl"]
+
+[parts.theme]
+target = "theme.kdl"
+
+[parts.effects]
+target = "effects.kdl"
+""")
+        m = manifest.load_manifest(app)
+        self.assertIn("explicit.kdl", m.preserve)
+        self.assertIn("theme.kdl", m.preserve)
+        self.assertIn("effects.kdl", m.preserve)
+        # Ensure no duplicates if target was already explicitly declared
+        (app / ".module.toml").write_text("""
+[packages]
+preserve = ["theme.kdl"]
+
+[parts.theme]
+target = "theme.kdl"
+""")
+        m2 = manifest.load_manifest(app)
+        self.assertEqual(m2.preserve, ["theme.kdl"])
 
 
 if __name__ == "__main__":

@@ -1,20 +1,101 @@
 # Changelog
 
-此文件记录 NyxNiri 每个版本中用户可感知的重要变化。
+此文件记录 Nyxuri 每个版本中用户可感知的重要变化。
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)，
 版本号遵循 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)。
 
 ## [Unreleased]
 
+## [v3.1.0] - 2026-09-26
+
+> 这是 3.x 系列的最后一个过渡版本。下个版本将正式迎来自研桌面外壳 Nyxuri Shell，并依然完整保留对 Noctalia V5 的双轨支持与自由切换。
+
 ### Added
-- update 支持 --to 指定标签或提交号:多台机器可锁到同一版本,先在一台验证再整体推进;无标签环境的版本显示改为回退当前提交号,不再显示陈旧的固定版本号
-- 设置 NYXNIRI_REPO 环境变量即可让安装与更新走自己的仓库源(fork 或内网镜像),不设置则一切照旧
+- 项目与管理指令全局更名为 `nyxuri`，旧指令 `nyxniri` 与旧环境变量继续兼容并自动平滑迁移
+- 新增预设零件（Parts）体系：窗口视觉特效与发光边框支持通过终端与双栏菜单单独装卸，无需重载全部配置
+- Niri 特效零件新增 xray-blur 预设，降低半透明窗口的 GPU 渲染开销
+- 常用浏览器支持按需开启可变刷新率（VRR），减少滚动与视频播放时的画面撕裂
+- 新增 `nyxuri shell` 命令，支持查看当前桌面外壳并在默认外壳与自定义外壳间自由切换
+- Kitty 终端 Ctrl+C 智能识别：有划选内容时复制并清除高亮，无选区时发送中断信号
+- Kitty 支持鼠标右键直接粘贴剪贴板，关闭划词自动复制避免剪贴板被污染
+- 锁屏状态下支持直接调节多媒体音量与静音
+
+### Changed
+- 默认不再指定 NVIDIA 驱动，并移除旧 Electron 显示设置；部分旧应用可能改用 XWayland
+- 安装器和 Fish 使用同一套包管理规则，支持 Shelly，安装失败或超时会如实反馈
+- 安装输入法不再顺带启用皮肤；皮肤设置即时应用且不重启输入法，卸载保留个人修改
+- 安装 Fcitx5-Rime 时自动配置好雾凇拼音方案，无需手动初始化
+- 未安装星环启动器时，应用快捷键自动回退至系统备选启动器
+- 壁纸选择器与星环启动器直接读取系统调色板，色彩表现更一致
+- 卸载壁纸时只移除项目自带素材，不再触碰用户的私人壁纸目录
+- 启动时若自定义桌面外壳异常，自动弹出桌面通知并回退到 Noctalia 避免黑屏
 
 ### Fixed
+- 修复深浅模式切换时输入法皮肤未动态跟随的问题，并防止未启动时意外唤醒后台进程
+- 修复登录界面同步外观时误弹窗口索要管理员密码的问题
+- 修复更新操作在自动确认模式下未创建备份快照的问题，更新前均会自动生成受保快照
+
+## [v3.0.5] - 2026-09-12
+
+### Added
+- Niri 新增 glow(包括跟随Material You配色版本) 预设
+- 游戏与模拟器支持按需开启可变刷新率(VRR)，避免锁屏与桌面静止时频闪
+- 部署完成后支持运行用户自己的收尾脚本
+- 主页文档新增自定义配置与模块化引入的实用速查
+
+### Fixed
+- 适配 Fcitx 5.1.22 皮肤切片规范，修复候选词框背景中空与边角异常
+- 修复 Orbit Launcher 运行缓存清理工具时因解释器错误闪退的问题
+- 自动修复指向旧安装路径或已清理缓存的无效 nyxniri 命令软链接
+- 核显 + NVIDIA 独显的笔记本不再强制所有程序使用 NVIDIA 环境变量，避免浏览器播放部分视频时画面错乱
+- 已配置全局免密 sudo 的安装不再索要从未设置的密码
+- 笔记本亮度键调节内屏背光，外接显示器仍用原来的 DDC 方式
+- 壁纸选择器支持生成带透明通道图片的缩略图
+- 补齐顶栏字体粗细、媒体组件与时钟格式调整
+
+## [v3.0.4] - 2026-08-29
+
+### Added
+- se 的 AUR 搜索支持 shelly，没有 paru/yay 的机器也能搜
+- 常用软件菜单重做：应用按用途分组、可折叠浏览，新增 Brave、VS Code、Steam、微信、QQ 等 15 款
+- 微信、QQ、Spotify 改走 Flatpak 安装，需要的组件自动配好
+- update 支持 --to 指定标签或提交号:多台机器可锁到同一版本,先在一台验证再整体推进;无标签环境的版本显示改为回退当前提交号,不再显示陈旧的固定版本号
+- 设置 NYXNIRI_REPO 环境变量即可让安装与更新走自己的仓库源(fork 或内网镜像),不设置则一切照旧
+- 非 Arch 发行版上运行安装或依赖菜单会直接说明情况并告知手动取用配置的方法,不再刷一屏 pacman 报错
+- fish 终端里 nyxniri 的 Tab 补全覆盖全部命令与别名，预设和快照序号也能动态补出
+
+### Changed
+- Noctalia 顶栏左侧新增 CPU 与内存胶囊指示，右侧精简图标排列，调整日期格式
+- se/un 的 fzf 界面去掉 emoji
+- fish 里 Ctrl+V 改为粘贴系统剪贴板（原先被 fzf 变量搜索占用），kitty 与 zed 的粘贴体验从此一致
+- 依赖检测与配置部署减少重复扫描和探测，安装流程更利落
+- 预设管理界面改为树状折叠，可直接展开预设并在底部按 Tab 查看包含的文件与保留项。
+- 系统诊断结果按类别分组呈现，末尾增加检查项统计。
+- 配置快照回滚改为交互菜单单选。
+- 壁纸选择器按 Material You 重做(还在打磨)，移除随机切换
+- clean-cache 重做：勾选要清理的项目后回车执行（默认全选、TRIM 除外），支持 --only 指定项目，脚本改名 clean-cache.py
+
+### Fixed
+- se 搜 AUR 失败时会显示具体原因，不再无声地返回空列表
+- 注销后残留的 Noctalia 进程不再占住旧 niri 会话，重新登录后顶栏会正常启动
+- 选装 Fcitx5 Rime 后会立即启动，之后进入 niri 也会自动运行，不再出现安装成功却无法输入的情况
+- clean-cache 试运行不再索要密码，也只展示清理计划不再动手
+- 开启自动确认后，深度清理、删除快照、放弃本地改动仍会逐一询问
+- orbit 启动器不再向身份不明的进程发送结束信号
+- orbit 菜单项不再执行 shell 命令串，复杂命令请包成脚本再填路径
+- 登录界面切换或安装失败时会保留原登录管理器与配置备份
+- 预设活动状态中的路径穿越、绝对路径、符号链接和异常内容现在会冻结原配置并给出警告，不再回退默认预设
+- NyxNiri 只会替换或删除自身创建的命令链接，不再碰同名文件、目录或其他链接
+- 并发运行安装、部署、回滚或卸载时不会互相破坏锁定状态
+- 找不到 AUR 助手且官方仓库没有 paru 时不再自动构建
+- Fish 插件现在固定到已审查版本，卸载只清理 NyxNiri 安装的文件
+- 从任意目录启动安装时不再加载同名伪造程序，避免干扰安装
+- 依赖检测、系统诊断与插件更新等外部调用增加超时保护，遇到弱网或服务无响应时自动跳过并继续，不再卡死或中断安装。
+- 更新成功后改用刚更新的新代码完成后续部署，跨版本更新不再带着旧程序跑到一半崩溃。
+- 更新中途被打断或程序文件缺失时，给出一句话恢复指引，不再甩出大段报错。
 - 切换 niri 配置时显示器不再闪一下:用户的 monitor.kdl 现在在替换前就放进新配置目录,不再先换成默认空文件再事后拷回。
 - 检查更新后若自动重启失败,不再误报"更新失败",改为提示手动重新运行。
-- 依赖检测、系统诊断、fisher 插件更新等调用外部命令的环节加了超时,弱网或守护进程无响应时不再卡死整个程序。
 - 诊断报告改为并行收集系统信息,生成速度明显变快。
 - 快照数量上限 30 个,超出自动清理最旧的,不再无限堆积。
 - fisher 插件列表没变时不再重复跑网络更新。
@@ -398,42 +479,45 @@
 ### Added
 - 首次发布基于 Niri 与 Noctalia V5 的 NyxNiri 桌面配置。
 
-[Unreleased]: https://github.com/ech678/NyxNiri/compare/v3.0.3...HEAD
-[v3.0.3]: https://github.com/ech678/NyxNiri/compare/v3.0.2...v3.0.3
-[v3.0.2]: https://github.com/ech678/NyxNiri/compare/v3.0.1...v3.0.2
-[v3.0.1]: https://github.com/ech678/NyxNiri/compare/v3.0.0...v3.0.1
-[v3.0.0]: https://github.com/ech678/NyxNiri/compare/v2.3.4...v3.0.0
-[v2.3.4]: https://github.com/ech678/NyxNiri/compare/v2.3.3...v2.3.4
-[v2.3.3]: https://github.com/ech678/NyxNiri/compare/v2.3.2...v2.3.3
-[v2.3.2]: https://github.com/ech678/NyxNiri/compare/v2.3.1...v2.3.2
-[v2.3.1]: https://github.com/ech678/NyxNiri/compare/v2.3.0...v2.3.1
-[v2.3.0]: https://github.com/ech678/NyxNiri/compare/v2.2.4...v2.3.0
-[v2.2.4]: https://github.com/ech678/NyxNiri/compare/v2.2.3...v2.2.4
-[v2.2.3]: https://github.com/ech678/NyxNiri/compare/v2.2.2...v2.2.3
-[v2.2.2]: https://github.com/ech678/NyxNiri/compare/v2.2.1...v2.2.2
-[v2.2.1]: https://github.com/ech678/NyxNiri/compare/v2.2.0...v2.2.1
-[v2.2.0]: https://github.com/ech678/NyxNiri/compare/v2.1.20...v2.2.0
-[v2.1.20]: https://github.com/ech678/NyxNiri/compare/v2.1.19...v2.1.20
-[v2.1.19]: https://github.com/ech678/NyxNiri/compare/v2.1.18...v2.1.19
-[v2.1.18]: https://github.com/ech678/NyxNiri/compare/v2.1.17...v2.1.18
-[v2.1.17]: https://github.com/ech678/NyxNiri/compare/v2.1.16...v2.1.17
-[v2.1.16]: https://github.com/ech678/NyxNiri/compare/v2.1.15...v2.1.16
-[v2.1.15]: https://github.com/ech678/NyxNiri/compare/v2.1.14...v2.1.15
-[v2.1.14]: https://github.com/ech678/NyxNiri/compare/v2.1.13...v2.1.14
-[v2.1.13]: https://github.com/ech678/NyxNiri/compare/v2.1.12...v2.1.13
-[v2.1.12]: https://github.com/ech678/NyxNiri/compare/v2.1.11...v2.1.12
-[v2.1.11]: https://github.com/ech678/NyxNiri/compare/v2.1.10...v2.1.11
-[v2.1.10]: https://github.com/ech678/NyxNiri/compare/v2.1.9...v2.1.10
-[v2.1.9]: https://github.com/ech678/NyxNiri/compare/v2.1.8...v2.1.9
-[v2.1.8]: https://github.com/ech678/NyxNiri/compare/v2.1.7...v2.1.8
-[v2.1.7]: https://github.com/ech678/NyxNiri/compare/v2.1.6...v2.1.7
-[v2.1.6]: https://github.com/ech678/NyxNiri/compare/v2.1.5...v2.1.6
-[v2.1.5]: https://github.com/ech678/NyxNiri/compare/v2.1.4...v2.1.5
-[v2.1.4]: https://github.com/ech678/NyxNiri/compare/v2.1.3...v2.1.4
-[v2.1.3]: https://github.com/ech678/NyxNiri/compare/v2.1.2...v2.1.3
-[v2.1.2]: https://github.com/ech678/NyxNiri/compare/v2.1.1...v2.1.2
-[v2.1.1]: https://github.com/ech678/NyxNiri/compare/v2.1.0...v2.1.1
-[v2.1.0]: https://github.com/ech678/NyxNiri/compare/v2.0.2...v2.1.0
-[v2.0.2]: https://github.com/ech678/NyxNiri/compare/v2.0.1...v2.0.2
-[v2.0.1]: https://github.com/ech678/NyxNiri/compare/v2.0.0...v2.0.1
-[v2.0.0]: https://github.com/ech678/NyxNiri/releases/tag/v2.0.0
+[Unreleased]: https://github.com/ech678/Nyxuri/compare/v3.1.0...HEAD
+[v3.1.0]: https://github.com/ech678/Nyxuri/compare/v3.0.5...v3.1.0
+[v3.0.5]: https://github.com/ech678/Nyxuri/compare/v3.0.4...v3.0.5
+[v3.0.4]: https://github.com/ech678/Nyxuri/compare/v3.0.3...v3.0.4
+[v3.0.3]: https://github.com/ech678/Nyxuri/compare/v3.0.2...v3.0.3
+[v3.0.2]: https://github.com/ech678/Nyxuri/compare/v3.0.1...v3.0.2
+[v3.0.1]: https://github.com/ech678/Nyxuri/compare/v3.0.0...v3.0.1
+[v3.0.0]: https://github.com/ech678/Nyxuri/compare/v2.3.4...v3.0.0
+[v2.3.4]: https://github.com/ech678/Nyxuri/compare/v2.3.3...v2.3.4
+[v2.3.3]: https://github.com/ech678/Nyxuri/compare/v2.3.2...v2.3.3
+[v2.3.2]: https://github.com/ech678/Nyxuri/compare/v2.3.1...v2.3.2
+[v2.3.1]: https://github.com/ech678/Nyxuri/compare/v2.3.0...v2.3.1
+[v2.3.0]: https://github.com/ech678/Nyxuri/compare/v2.2.4...v2.3.0
+[v2.2.4]: https://github.com/ech678/Nyxuri/compare/v2.2.3...v2.2.4
+[v2.2.3]: https://github.com/ech678/Nyxuri/compare/v2.2.2...v2.2.3
+[v2.2.2]: https://github.com/ech678/Nyxuri/compare/v2.2.1...v2.2.2
+[v2.2.1]: https://github.com/ech678/Nyxuri/compare/v2.2.0...v2.2.1
+[v2.2.0]: https://github.com/ech678/Nyxuri/compare/v2.1.20...v2.2.0
+[v2.1.20]: https://github.com/ech678/Nyxuri/compare/v2.1.19...v2.1.20
+[v2.1.19]: https://github.com/ech678/Nyxuri/compare/v2.1.18...v2.1.19
+[v2.1.18]: https://github.com/ech678/Nyxuri/compare/v2.1.17...v2.1.18
+[v2.1.17]: https://github.com/ech678/Nyxuri/compare/v2.1.16...v2.1.17
+[v2.1.16]: https://github.com/ech678/Nyxuri/compare/v2.1.15...v2.1.16
+[v2.1.15]: https://github.com/ech678/Nyxuri/compare/v2.1.14...v2.1.15
+[v2.1.14]: https://github.com/ech678/Nyxuri/compare/v2.1.13...v2.1.14
+[v2.1.13]: https://github.com/ech678/Nyxuri/compare/v2.1.12...v2.1.13
+[v2.1.12]: https://github.com/ech678/Nyxuri/compare/v2.1.11...v2.1.12
+[v2.1.11]: https://github.com/ech678/Nyxuri/compare/v2.1.10...v2.1.11
+[v2.1.10]: https://github.com/ech678/Nyxuri/compare/v2.1.9...v2.1.10
+[v2.1.9]: https://github.com/ech678/Nyxuri/compare/v2.1.8...v2.1.9
+[v2.1.8]: https://github.com/ech678/Nyxuri/compare/v2.1.7...v2.1.8
+[v2.1.7]: https://github.com/ech678/Nyxuri/compare/v2.1.6...v2.1.7
+[v2.1.6]: https://github.com/ech678/Nyxuri/compare/v2.1.5...v2.1.6
+[v2.1.5]: https://github.com/ech678/Nyxuri/compare/v2.1.4...v2.1.5
+[v2.1.4]: https://github.com/ech678/Nyxuri/compare/v2.1.3...v2.1.4
+[v2.1.3]: https://github.com/ech678/Nyxuri/compare/v2.1.2...v2.1.3
+[v2.1.2]: https://github.com/ech678/Nyxuri/compare/v2.1.1...v2.1.2
+[v2.1.1]: https://github.com/ech678/Nyxuri/compare/v2.1.0...v2.1.1
+[v2.1.0]: https://github.com/ech678/Nyxuri/compare/v2.0.2...v2.1.0
+[v2.0.2]: https://github.com/ech678/Nyxuri/compare/v2.0.1...v2.0.2
+[v2.0.1]: https://github.com/ech678/Nyxuri/compare/v2.0.0...v2.0.1
+[v2.0.0]: https://github.com/ech678/Nyxuri/releases/tag/v2.0.0

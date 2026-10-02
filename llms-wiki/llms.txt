@@ -1,39 +1,49 @@
-# NyxNiri
+# Nyxuri
 
-> NyxNiri 把精选桌面配置（niri / kitty / fish / noctalia …）原子部署到 ~/.config。
+> Nyxuri 把精选桌面配置（niri / kitty / fish / noctalia …）原子部署到 ~/.config。
 > 三层叠加（默认 → 预设 → __custom__），三模式安装（curl|bash / git clone / AUR），
 > 纯 Python 标准库引擎（零 pip 依赖，需 3.11+ 因 tomllib）。repo = 真值，
 > ~/.config = 派生物。
 
 这份 wiki 是项目的 LLM 友好参考：每页一主题、自包含、按需取。读这份索引找入口，再
 跟链接到详情页。横向**祈使**规则（跑啥命令、铁律、工作流、voice）在 [../AGENTS.md](../AGENTS.md)；
-本文是**陈述**参考（系统怎么运作、长啥样）。源码（configs/ + nyxniri/）永远是最终真值，
+本文是**陈述**参考（系统怎么运作、长啥样）。源码（configs/ + nyxuri/）永远是最终真值，
 这份 wiki 是它的结构化镜像——有出入以源码为准。
 
 ## Architecture
 
 - [overview](overview.md): 精神、三概念（Configs / Presets / Customs）、叠加规则
-- [preset-mechanism](preset-mechanism.md): active 状态文件、src 四分支、写时序铁律、原子写、update 同步语义
+- [preset-mechanism](preset-mechanism.md): active 状态文件、通用零件插槽体系（Parts Slots）、防覆盖自愈、写时序铁律、原子写
 - [file-preservation](file-preservation.md): Dunder __custom__ walk + manifest preserve（两套刻意不合并）
 - [install-modes](install-modes.md): standalone / repo / system 三模式、.system-install marker、软链、PATH 遮蔽、update 分支、AUR
-- [nvidia-patch](nvidia-patch.md): 硬件自适应层（为何不塞进 preset 系统）
+- [nvidia-patch](nvidia-patch.md): GPU 设备诊断与默认驱动变量移除
+- [phase-zero](phase-zero.md): 阶段零清理清单与兼容边界
 - [uninstall](uninstall.md): 勾选式卸载、5 处历史 [gap]、执行顺序铁律
-- [tui-switcher](tui-switcher.md): 双栏预设切换、apply 窄 deploy 路径
+- [tui-switcher](tui-switcher.md): 双栏预设与零件工作台（Dual-Pane Studio）、apply 窄 deploy 路径
 - [declarative](declarative.md): 命令式 vs 声明式边界（啥该 / 不该声明式）
 - [orbit-launcher](orbit-launcher.md): 星环启动器设计规格（快捷键、状态机、极坐标防抖、弹簧参数、flick 判定）
+- [runtime-topology](runtime-topology.md): 运行时进程树与 IPC 拓扑（会话启动、守护进程、脚本层、信号广播流）
 
 ## Decoupled modules
 
-- [subpackages](subpackages.md): nyxniri/{deploy, state, modules, packaging} 子包职责、__init__ re-export、import 约定
+- [subpackages](subpackages.md): nyxuri/{pkg, deploy, state, modules, packaging} 职责、CLI 与菜单分离、TOML 文案
 - [two-axis-config](two-axis-config.md): 可选（.optional-apps.toml）/ 有配置（目录）两轴独立、"加配置不毕业"
 - [manifest-schema](manifest-schema.md): .module.toml + .optional-apps.toml 字段参考
+- [modules](modules.md): 系统级可选模块（fcitx5/greeter/fisher/gtktheme）与 lifecycle 上抛合约
+- [i18n](i18n.md): 双语文案引擎（msg/text 协议）、宏变量替换与 translations.toml 契约
+- [assets-deploy](assets-deploy.md): 壁纸与静态资产流水线、离线 fallback 与 WallpaperDeployResult
+- [backup-snapshot](backup-snapshot.md): 配置快照生命周期、上限 30 个自动 prune 与回滚防灾
+- [packaging](packaging.md): AUR 打包与 gen-deps.py 自动汇聚 depends/optdepends
+- [theme-adaptation](../configs/noctalia/README.md): 主题中枢与 GTK/Brave 信号流全记录（GTK4 双 @media 块、settings.ini 兼容、Problem 1-12 证伪排查）
+
 
 ## Reference
 
+- [roadmap](../ROADMAP.md): 暂放根目录的演进草案与完成状态（非当前架构说明）
 - [concept-glossary](concept-glossary.md): 路径 / 动作 / 内容术语表（repo_dir、nyx_dir、deploy、preset…）
 - [operation-map](operation-map.md): 全部 CLI 命令目录（install / snapshot / preset / …）
 - [testing](testing.md): 测试策略与形状、TempEnv 隔离、mock 层级
-- [delayed-decisions](delayed-decisions.md): 留待触发条件的事项（overlay 预设、拆 cli、子目录分组）
+- [delayed-decisions](delayed-decisions.md): 留待触发条件的事项与已落地的结构调整
 
 ## Noctalia 参考
 
@@ -42,4 +52,4 @@
 ## Source of truth
 
 - [../AGENTS.md](../AGENTS.md): 祈使规则——铁律、必跑命令、工作流、writing voice
-- 仓库 `configs/` + `nyxniri/` 源码本身（这份 wiki 是它的结构化镜像，源码为准）
+- 仓库 `configs/` + `nyxuri/` 源码本身（这份 wiki 是它的结构化镜像，源码为准）

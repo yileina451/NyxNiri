@@ -1,7 +1,7 @@
 # Two-Axis Config — 可选 / 有配置 解耦
 
 > 一个 app 有两个**独立**属性："有没有配置" 和 "是不是可选软件"。两轴正交，不绑一起。
-> 源码：`nyxniri/deploy/manifest.py`。
+> 源码：`nyxuri/deploy/manifest.py`。
 
 ## 为什么解耦
 
@@ -10,22 +10,23 @@
 用 GNOME 文件管理器）。
 
 解耦后两轴独立：
-- **有配置（axis A）**：`configs/<app>/` 目录存在 → `nyxniri install` 部署它
+- **有配置（axis A）**：`configs/<app>/` 目录存在 → `nyxuri install` 部署它
 - **可选（axis B）**：列在 `configs/.optional-apps.toml` → 进 deps 菜单、AUR `optdepends`
 
 一个 app 可以是：可选+无配置（nautilus 现状）、必装+有配置（niri/kitty）、**可选+有配置**
-（给可选软件挂配置，仍保持可选、不毕业）、或都不沾（不存在）。
+（zed 现状——既有配置又登进可选菜单）、或都不沾（不存在）。
 
 ## 两个 discover 函数（独立查询）
 
 | 函数 | 读什么 | 干啥 | 返回 |
 |---|---|---|---|
-| `discover_deployable_apps()` | **扫目录**（不看 toml） | `nyxniri install` 部署 | 有 `configs/<app>/` 的 app |
+| `discover_deployable_apps()` | **扫目录**（不看 toml） | `nyxuri install` 部署 | 有 `configs/<app>/` 的 app |
 | `discover_optional_apps()` | **读 toml**（不看目录） | deps 菜单 + optdepends | `.optional-apps.toml` 里的 app |
 
 `discover_manifest_apps()` 合并两源（目录扫描 + toml 读取），返回 `(name, ModuleManifest)`
 列表。一个 app 在两边都出现 → 合并后一条、`is_deployable=True` AND `is_optional=True`
-（可选+有配置）。
+（可选+有配置）；其**可选轴字段**（repo/aur/flatpak/label/category/detect）以 toml 为准，
+配置轴字段（preserve/chmod）留在 `.module.toml`。
 
 ## gen-deps 的判别（axis B 优先）
 
@@ -48,7 +49,7 @@ nautilus 现在在 `.optional-apps.toml`、无配置目录 → 可选、无配�
 mkdir configs/nautilus/ && 放配置文件
 ```
 
-立刻：`discover_deployable_apps()` 扫到它（有目录了）→ `nyxniri install` 部署它的配置。
+立刻：`discover_deployable_apps()` 扫到它（有目录了）→ `nyxuri install` 部署它的配置。
 但 `.optional-apps.toml` 仍列着它 → 仍在 deps 菜单、仍是 optdepends。**两条轴互不干扰**，
 加配置不会误伤可选性。想去掉可选性是另一个主动动作（从 toml 删条目），不会被"加配置"误触发。
 
@@ -64,8 +65,9 @@ mkdir configs/nautilus/ && 放配置文件
 - `.optional-apps.toml`（configs/ 根一个）→ 描述**哪些 app 是可选软件**（包名，无配置）。
   解决"git 不跟踪空目录"——可选软件无配置目录，需要 toml 作为登记载体。
 
-无配置的可选软件（nautilus/missioncenter/fcitx5-rime）住 configs/ 只为让 deps 菜单和
-PKGBUILD optdepends 知道"有这么个可选软件、包名叫啥"——单一扫描路径，不加第二处。
+无配置的可选软件（nautilus/missioncenter/fcitx5-rime 及常用软件目录里的大部分）住
+configs/ 只为让 apps 菜单和 PKGBUILD optdepends 知道"有这么个可选软件、包名叫啥"——
+单一扫描路径，不加第二处。
 
 ## 替代了什么
 
