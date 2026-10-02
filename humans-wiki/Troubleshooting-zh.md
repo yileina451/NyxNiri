@@ -23,7 +23,9 @@ enable_ddcutil = false
 
 更新并重新部署 Nyxuri。默认配置不再指定 GPU 驱动，部署也不再根据 PCI 设备改写环境变量；PCI 列表不能确认实际负责渲染的 GPU。有特殊驱动需求时，在 `~/.config/niri/__custom__.kdl` 中自行配置。
 
-默认配置同时移除了旧的 `ELECTRON_OZONE_PLATFORM_HINT "auto"`，部分旧 Electron 应用可能改用 XWayland。正常部署会更新主配置，但不会清理个人覆盖、个人预设或历史快照，也不会改变现有会话环境；重新登录后再检查效果。
+当前配置为 Niri 启动的 Electron 程序设置了 `ELECTRON_OZONE_PLATFORM_HINT "auto"`。Niri 合成器默认根据可用 DRM 设备自动选择渲染显卡；混合显卡笔记本优先使用核显，没有核显时使用可用的独显。只有要覆盖自动选择时才配置实验性的 `debug.render-drm-device`，并使用 `/dev/dri/renderD*` 节点，不要写 `WLR_DRM_DEVICES` 或 `card*`。
+
+正常部署会更新主配置，但不会清理个人覆盖、个人预设或历史快照，也不会改变现有会话环境；重新登录后再检查效果。
 
 ---
 

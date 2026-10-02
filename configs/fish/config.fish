@@ -2,27 +2,76 @@ if test -f /usr/share/cachyos-fish-config/cachyos-config.fish
     source /usr/share/cachyos-fish-config/cachyos-config.fish
 end
 
-# 代理配置 (Proxy Configuration) — 修改此处以适配你的代理端口
-set -g PROXY_ADDR "127.0.0.1:7890"
+# 同步给由 D-Bus 和 systemd 用户服务启动的新桌面程序
+function _proxy_sync_desktop
+    command -q dbus-update-activation-environment; or return 1
+    dbus-update-activation-environment --systemd $argv
+end
 
-# 开启代理 (支持自定义端口或地址，如: proxy_on 10808 或 proxy_on 192.168.1.5:7890)
+# 开启代理 (自动探测本机端口，也可传端口或地址覆盖)
 function proxy_on
-    set -l addr "$PROXY_ADDR"
+    set -l http_proxy_url ""
+    set -l socks_proxy_url ""
+
     if test (count $argv) -gt 0
+        set -l addr ""
         if string match -r '^\d+$' -- $argv[1]
             set addr "127.0.0.1:$argv[1]"
         else
             set addr "$argv[1]"
         end
+        set http_proxy_url "http://$addr"
+        set socks_proxy_url "socks5h://$addr"
+    else
+        set -l detected (python3 "$__fish_config_dir/proxy-discover.py")
+        if test $status -ne 0
+            echo "[!] 无法自动发现本机代理；先启动代理客户端，或运行 proxy_on <端口/地址>" >&2
+            return 1
+        end
+
+        for entry in $detected
+            set -l fields (string split -m 1 '=' -- "$entry")
+            if test (count $fields) -ne 2
+                continue
+            end
+            switch $fields[1]
+                case http
+                    set http_proxy_url "$fields[2]"
+                case socks
+                    set socks_proxy_url "$fields[2]"
+            end
+        end
+
+        if test -z "$http_proxy_url"
+            set http_proxy_url "$socks_proxy_url"
+        end
+        if test -z "$socks_proxy_url"
+            set socks_proxy_url "$http_proxy_url"
+        end
+        if test -z "$http_proxy_url"
+            echo "[!] 没有检测到可用的本机代理" >&2
+            return 1
+        end
     end
 
-    set -gx http_proxy "http://$addr"
-    set -gx https_proxy "http://$addr"
-    set -gx all_proxy "socks5://$addr"
-    set -gx HTTP_PROXY "http://$addr"
-    set -gx HTTPS_PROXY "http://$addr"
-    set -gx ALL_PROXY "socks5://$addr"
-    echo "[+] 终端代理已开启 (Proxy: $addr)"
+    set -gx http_proxy "$http_proxy_url"
+    set -gx https_proxy "$http_proxy_url"
+    set -gx all_proxy "$socks_proxy_url"
+    set -gx HTTP_PROXY "$http_proxy_url"
+    set -gx HTTPS_PROXY "$http_proxy_url"
+    set -gx ALL_PROXY "$socks_proxy_url"
+
+    if _proxy_sync_desktop \
+        "http_proxy=$http_proxy_url" \
+        "https_proxy=$http_proxy_url" \
+        "all_proxy=$socks_proxy_url" \
+        "HTTP_PROXY=$http_proxy_url" \
+        "HTTPS_PROXY=$http_proxy_url" \
+        "ALL_PROXY=$socks_proxy_url"
+        echo "[+] 终端与 D-Bus/systemd 启动程序的代理已开启 (HTTP: $http_proxy_url, SOCKS: $socks_proxy_url)"
+    else
+        echo "[!] 终端代理已开启，但桌面会话环境同步失败" >&2
+    end
 end
 
 # 关闭代理
@@ -33,7 +82,18 @@ function proxy_off
     set -e HTTP_PROXY
     set -e HTTPS_PROXY
     set -e ALL_PROXY
-    echo "[-] 终端代理已关闭"
+
+    if _proxy_sync_desktop \
+        http_proxy= \
+        https_proxy= \
+        all_proxy= \
+        HTTP_PROXY= \
+        HTTPS_PROXY= \
+        ALL_PROXY=
+        echo "[-] 终端与 D-Bus/systemd 启动程序的代理已关闭"
+    else
+        echo "[!] 终端代理已关闭，但桌面会话环境同步失败" >&2
+    end
 end
 
 # 查看代理状态
@@ -115,8 +175,8 @@ function nyxhelp --description "Nyxuri Cheatsheet速查手册"
             return
         case proxy
             set_color -o magenta; echo "  网络代理控制"; set_color normal
-            set_color -o yellow; echo -n "    proxy_on [端口/地址]     "; set_color green; echo "-> 开启代理 (默认 127.0.0.1:7890，Starship 实时显示)"; set_color normal
-            set_color -o yellow; echo -n "    proxy_off                "; set_color green; echo "-> 关闭代理 (清除环境变量与 Prompt 标识)"; set_color normal
+            set_color -o yellow; echo -n "    proxy_on [端口/地址]     "; set_color green; echo "-> 自动识别 HTTP/SOCKS 代理，也可手动指定"; set_color normal
+            set_color -o yellow; echo -n "    proxy_off                "; set_color green; echo "-> 清除终端与 D-Bus/systemd 代理变量"; set_color normal
             set_color -o yellow; echo -n "    proxy_status             "; set_color green; echo "-> 检查代理连通性、延迟与公网 IP"; set_color normal
             return
         case pkg

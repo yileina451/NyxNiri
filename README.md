@@ -12,7 +12,7 @@
 <sub>Built on Niri and Noctalia V5 — and stays out of your way.</sub></p>
 
 <p>
-  <a href="https://github.com/ech678/Nyxuri/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/ech678/Nyxuri" alt="Stars" /></a>
+  <a href="https://github.com/yileina451/NyxNiri/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/yileina451/NyxNiri" alt="Stars" /></a>
   &nbsp;
   <a href="https://archlinux.org"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Arch/arch2.svg" alt="Arch Linux" /></a>
   &nbsp;
@@ -24,7 +24,7 @@
 </a>
 
 <p>
-  <sub><em><a href="https://nyxniri.com">Website</a> · Watch demo on <a href="https://www.bilibili.com/video/BV1c63n6dEEG">Bilibili</a> · Join discussion on <a href="https://www.reddit.com/r/niri/comments/1vf53le/nyxniri_a_material_you_desktop_config_for_niri/">Reddit</a> · Read <a href="https://github.com/ech678/Nyxuri/wiki/Home">Wiki</a></em></sub>
+  <sub><em><a href="https://nyxniri.com">Website</a> · Watch demo on <a href="https://www.bilibili.com/video/BV1c63n6dEEG">Bilibili</a> · Join discussion on <a href="https://www.reddit.com/r/niri/comments/1vf53le/nyxniri_a_material_you_desktop_config_for_niri/">Reddit</a> · Read <a href="https://github.com/yileina451/NyxNiri/wiki/Home">Wiki</a></em></sub>
 </p>
 <br />
 
@@ -50,14 +50,14 @@
 
 ```bash
 # shallow clone: latest snapshot only; drop --depth 1 for full history
-git clone --depth 1 https://github.com/ech678/Nyxuri.git ~/Nyxuri
-cd ~/Nyxuri && ./install.sh
+git clone --depth 1 https://github.com/yileina451/NyxNiri.git ~/NyxNiri
+cd ~/NyxNiri && ./install.sh
 ```
 
 ### Standalone (online)
 
 ```bash
-curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/ech678/Nyxuri/main/install.sh | bash
+curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/yileina451/NyxNiri/main/install.sh | bash
 ```
 
 > [!TIP]
@@ -68,11 +68,11 @@ curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/ech678/Nyxuri/
 
 ```bash
 # Standalone via gh-proxy.org
-curl -fsSL --connect-timeout 10 https://gh-proxy.org/https://raw.githubusercontent.com/ech678/Nyxuri/main/install.sh | bash
+curl -fsSL --connect-timeout 10 https://gh-proxy.org/https://raw.githubusercontent.com/yileina451/NyxNiri/main/install.sh | bash
 
 # git clone via gh-proxy.org
-git clone --depth 1 https://gh-proxy.org/https://github.com/ech678/Nyxuri.git ~/Nyxuri
-cd ~/Nyxuri && ./install.sh
+git clone --depth 1 https://gh-proxy.org/https://github.com/yileina451/NyxNiri.git ~/NyxNiri
+cd ~/NyxNiri && ./install.sh
 ```
 </details>
 
@@ -97,44 +97,44 @@ Nyxuri
 
 Configs deploy atomically. Personal tweaks survive updates via the Dunder protocol: any file or folder containing `__custom__` (e.g. `__custom__.kdl`, `__custom__.conf`) and `monitor.kdl` are preserved.
 
-For detailed customization rules and post-deploy hooks, see [Configuration Guide (Wiki)](https://github.com/ech678/Nyxuri/wiki/Configuration).
+For detailed customization rules and post-deploy hooks, see [Configuration Guide (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Configuration).
 
 ## Presets
 
 Presets layer between defaults and your `__custom__` files, so switching never touches your own tweaks. Supports modular Parts slots.
 
-See full official preset list, Parts architecture, and private preset setup in [Presets Guide (Wiki)](https://github.com/ech678/Nyxuri/wiki/Presets).
+See full preset list, Parts architecture, and private preset setup in [Presets Guide (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Presets).
 
 ## Keybindings
 
 Core keybindings dispatch through `shell-action.sh`. Quick reference: `nyxhelp keys`.
 
-See complete window navigation and monitor moving shortcuts in [Keybindings (Wiki)](https://github.com/ech678/Nyxuri/wiki/Keybindings).
+See complete window navigation and monitor moving shortcuts in [Keybindings (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Keybindings).
 
 ## Extensions
 
 Optional extensions include dynamic Material You fcitx5 skin (NyxMellow), companion wallpaper and video pack, and greetd login screen matching Noctalia.
 
-For extension setup and lifecycle commands, see [Extensions Guide (Wiki)](https://github.com/ech678/Nyxuri/wiki/CLI-Reference#extensions).
+For extension setup and lifecycle commands, see [Extensions Guide (Wiki)](https://github.com/yileina451/NyxNiri/wiki/CLI-Reference#extensions).
 
 ## Tooling
 
 `nyxuri` manages install, update, snapshots, and diagnostics. Use `nyxhelp` in terminal for instant cheatsheet lookup.
 
-See full command matrix and options in [CLI Reference (Wiki)](https://github.com/ech678/Nyxuri/wiki/CLI-Reference).
+See full command matrix and options in [CLI Reference (Wiki)](https://github.com/yileina451/NyxNiri/wiki/CLI-Reference).
 
 ## Troubleshooting
 
 When encountering issues, run `./install.sh doctor` first.
 
-See full diagnostic guides and step-by-step solutions in [Troubleshooting (Wiki)](https://github.com/ech678/Nyxuri/wiki/Troubleshooting).
+See full diagnostic guides and step-by-step solutions in [Troubleshooting (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Troubleshooting).
 
 ## Credits
 
 **Contact & Community:**
 - Telegram Channel: [@linux_ricing](https://t.me/linux_ricing)
 - QQ: `2040244628` · Linux Ricing Group: `631425889`
-- Sponsor: [Afdian](https://afdian.com/a/Echoes678) · Bug reports: [GitHub Issues](https://github.com/ech678/Nyxuri/issues)
+- Sponsor: [Afdian](https://afdian.com/a/Echoes678) · Bug reports: [GitHub Issues](https://github.com/yileina451/NyxNiri/issues)
 
 **Special Thanks & Contributors:**
 - [Google Gemini](https://deepmind.google/technologies/gemini/) — burned through a pile of free Google tokens

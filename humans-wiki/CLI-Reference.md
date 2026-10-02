@@ -74,6 +74,8 @@
 | :--- | :--- |
 | `nyxhelp` | Interactive dual-panel cheatsheet |
 | `nyxhelp keys` | Niri keybindings |
-| `nyxhelp proxy` | Proxy controls (`proxy_on [port]`, `proxy_off`, `proxy_status`) |
+| `nyxhelp proxy` | Proxy controls (`proxy_on [port/address]`, `proxy_off`, `proxy_status`) |
 | `nyxhelp pkg` | Package shortcuts (`up`, `in`, `se`, `un`, `clean`) |
 | `nyxhelp all` | Full cheatsheet |
+
+Without arguments, `proxy_on` scans local loopback TCP listeners and identifies HTTP CONNECT / SOCKS5 proxies by protocol handshake. Start the proxy client first; if multiple candidates are found, specify one with `proxy_on <port/address>`. The toggle updates the current terminal and the D-Bus / systemd user-session environment for applications subsequently launched by those services. Applications spawned directly by niri or the desktop shell may not inherit the new values, and already-running browsers or games do not switch immediately. Use the proxy client's TUN / global mode to cover all desktop traffic.

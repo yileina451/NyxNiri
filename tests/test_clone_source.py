@@ -28,14 +28,17 @@ class TestCloneSourceOverride(unittest.TestCase):
         repo_url, registry = self._registry_with_env(custom)
         self.assertEqual(registry, f"[('Custom', '{custom}')]")
 
-    def test_display_repo_url_stays_official_even_when_overridden(self):
+    def test_display_repo_url_uses_personal_repo_even_when_overridden(self):
         repo_url, _ = self._registry_with_env("https://git.internal/NyxNiri.git")
-        self.assertTrue(repo_url.endswith("ech678/Nyxuri.git"))
+        self.assertEqual(repo_url, "https://github.com/yileina451/NyxNiri.git")
 
-    def test_default_without_env_unchanged(self):
+    def test_default_without_env_uses_only_personal_repo_mirrors(self):
         repo_url, registry = self._registry_with_env(None)
+        self.assertEqual(repo_url, "https://github.com/yileina451/NyxNiri.git")
+        self.assertIn("https://github.com/yileina451/NyxNiri.git", registry)
+        self.assertIn("gh-proxy.org/https://github.com/yileina451/NyxNiri.git", registry)
+        self.assertNotIn("ech678/Nyxuri", registry)
         self.assertIn("gh-proxy.org", registry)
-        self.assertIn("Official", registry)
 
     def _clone_behavior_with_env(self, env_value):
         """Run clone_repo_with_fallback in a fresh interpreter with the env set."""

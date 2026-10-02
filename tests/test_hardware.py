@@ -50,7 +50,7 @@ LSPCI_DUAL_VGA = """\
 
 REMOVED_VARIABLES = (
     "GBM_BACKEND", "__GLX_VENDOR_LIBRARY_NAME",
-    "LIBVA_DRIVER_NAME", "ELECTRON_OZONE_PLATFORM_HINT",
+    "LIBVA_DRIVER_NAME",
 )
 OLD_CONFIG = 'environment {\n' + ''.join(
     f'    {name} "personal-value"\n' for name in REMOVED_VARIABLES
@@ -102,7 +102,9 @@ class TestGpuContracts(unittest.TestCase):
             self.assertEqual(deploy_selected_configs(items_to_deploy=["niri"]), [])
             self.assertEqual((target / "config.kdl").read_bytes(), first)
         for variable in REMOVED_VARIABLES:
-            self.assertNotIn(variable.encode(), first)
+            self.assertNotRegex(first.decode(), rf"(?m)^\s*{variable}\s")
+        self.assertIn(b'ELECTRON_OZONE_PLATFORM_HINT "auto"', first)
+        self.assertNotIn(b"render-drm-device", first)
         self.assertIn(b'~/Pictures/Screenshots/', first)
         self.assertNotIn(b"/home/user", first)
         self.assertEqual((target / "__custom__.kdl").read_text(), OLD_CONFIG)
@@ -121,8 +123,10 @@ class TestGpuContracts(unittest.TestCase):
         with patch("nyxuri.deploy.deploy.deploy_wallpapers"), \
              patch("nyxuri.deploy.deploy.render_completion_screen"):
             self.assertTrue(test_deploy())
+            config = (target / "config.kdl").read_text()
         for variable in REMOVED_VARIABLES:
-            self.assertNotIn(variable, (target / "config.kdl").read_text())
+            self.assertNotRegex(config, rf"(?m)^\s*{variable}\s")
+        self.assertIn('ELECTRON_OZONE_PLATFORM_HINT "auto"', config)
         self.assertEqual((target / "__custom__.kdl").read_text(), OLD_CONFIG)
 
     def test_report_reuses_pci_probe_and_never_changes_config(self):

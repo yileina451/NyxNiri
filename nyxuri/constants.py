@@ -39,15 +39,15 @@ CONFIG_DIR_NAME = "configs"
 ASSETS_DIR_NAME = "assets"
 
 # --- Repository & Network Mirrors ---
-REPO_URL = "https://github.com/ech678/Nyxuri.git"
+REPO_URL = "https://github.com/yileina451/NyxNiri.git"
 
 _repo_override = get_compat_env("REPO")
 if _repo_override:
     GIT_MIRROR_REGISTRY = [("Custom", _repo_override)]
 else:
     GIT_MIRROR_REGISTRY = [
-        ("Official", "https://github.com/ech678/Nyxuri.git"),
-        ("gh-proxy.org", "https://gh-proxy.org/https://github.com/ech678/Nyxuri.git"),
+        ("Personal", REPO_URL),
+        ("gh-proxy.org", f"https://gh-proxy.org/{REPO_URL}"),
     ]
 
 # Single-source override is user-configured, never silently replaced: an

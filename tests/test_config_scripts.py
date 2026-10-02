@@ -5,10 +5,13 @@ pinned here because the project has no bash test framework.
 """
 
 import os
+import importlib.util
 import shutil
+import socketserver
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 
@@ -21,6 +24,179 @@ _START_NOCTALIA = _REPO / "configs" / "niri" / "scripts" / "session-shell.sh"
 _SESSION_SHELL = _REPO / "configs" / "niri" / "scripts" / "session-shell.sh"
 _SHELL_ACTION = _REPO / "configs" / "niri" / "scripts" / "shell-action.sh"
 _BRIGHTNESS = _REPO / "configs" / "niri" / "scripts" / "niri-brightness.sh"
+_FISH_CONFIG = _REPO / "configs" / "fish" / "config.fish"
+_PROXY_DISCOVER = _REPO / "configs" / "fish" / "proxy-discover.py"
+_PROXY_DISCOVER_SPEC = importlib.util.spec_from_file_location("proxy_discover", _PROXY_DISCOVER)
+proxy_discover = importlib.util.module_from_spec(_PROXY_DISCOVER_SPEC)
+_PROXY_DISCOVER_SPEC.loader.exec_module(proxy_discover)
+
+
+@unittest.skipUnless(shutil.which("fish"), "fish is required")
+class TestFishProxy(unittest.TestCase):
+
+    def setUp(self):
+        self._ctx = TempEnv()
+        self._ctx.__enter__()
+        self.home = self._ctx.home
+        self.bin_dir = self.home / "bin"
+        self.bin_dir.mkdir()
+        self.calls = self.home / "calls"
+        dbus = self.bin_dir / "dbus-update-activation-environment"
+        dbus.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >>"$CALLS"\n', encoding="utf-8")
+        dbus.chmod(0o755)
+
+    def tearDown(self):
+        self._ctx.__exit__()
+
+    def _run(self, command):
+        return subprocess.run(
+            [shutil.which("fish"), "--no-config", "-c", f"source '{_FISH_CONFIG}'; {command}"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env={
+                "PATH": f"{self.bin_dir}:/usr/bin:/bin",
+                "HOME": str(self.home),
+                "CALLS": str(self.calls),
+            },
+        )
+
+    def test_proxy_on_syncs_exact_session_environment(self):
+        proc = self._run("proxy_on 10808")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(
+            self.calls.read_text(encoding="utf-8").splitlines(),
+            [
+                "--systemd",
+                "http_proxy=http://127.0.0.1:10808",
+                "https_proxy=http://127.0.0.1:10808",
+                "all_proxy=socks5h://127.0.0.1:10808",
+                "HTTP_PROXY=http://127.0.0.1:10808",
+                "HTTPS_PROXY=http://127.0.0.1:10808",
+                "ALL_PROXY=socks5h://127.0.0.1:10808",
+            ],
+        )
+
+    def test_proxy_off_clears_exact_session_environment(self):
+        proc = self._run("proxy_off")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(
+            self.calls.read_text(encoding="utf-8").splitlines(),
+            [
+                "--systemd",
+                "http_proxy=",
+                "https_proxy=",
+                "all_proxy=",
+                "HTTP_PROXY=",
+                "HTTPS_PROXY=",
+                "ALL_PROXY=",
+            ],
+        )
+
+    def test_proxy_on_uses_separately_discovered_protocol_endpoints(self):
+        python = self.bin_dir / "python3"
+        python.write_text(
+            '#!/bin/sh\nprintf "%s\\n" '
+            '"http=http://127.0.0.1:46001" '
+            '"socks=socks5h://127.0.0.1:46002"\n',
+            encoding="utf-8",
+        )
+        python.chmod(0o755)
+
+        proc = self._run("proxy_on")
+
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(
+            self.calls.read_text(encoding="utf-8").splitlines(),
+            [
+                "--systemd",
+                "http_proxy=http://127.0.0.1:46001",
+                "https_proxy=http://127.0.0.1:46001",
+                "all_proxy=socks5h://127.0.0.1:46002",
+                "HTTP_PROXY=http://127.0.0.1:46001",
+                "HTTPS_PROXY=http://127.0.0.1:46001",
+                "ALL_PROXY=socks5h://127.0.0.1:46002",
+            ],
+        )
+
+
+class TestProxyDiscovery(unittest.TestCase):
+
+    def test_listener_parser_only_accepts_loopback_and_wildcard_sockets(self):
+        output = """\
+LISTEN 0 128 127.0.0.1:7890 0.0.0.0:*
+LISTEN 0 128 [::1]:1080 [::]:*
+LISTEN 0 128 0.0.0.0:9000 0.0.0.0:*
+LISTEN 0 128 192.168.1.20:9999 0.0.0.0:*
+"""
+        self.assertEqual(
+            proxy_discover._parse_listeners(output),
+            [("::1", 1080), ("127.0.0.1", 7890), ("127.0.0.1", 9000)],
+        )
+
+    def test_discovers_http_and_socks_on_different_ports(self):
+        class HttpProxyHandler(socketserver.BaseRequestHandler):
+            def handle(self):
+                request = self.request.recv(512)
+                if request.startswith(b"CONNECT "):
+                    self.request.sendall(
+                        b"HTTP/1.1 407 Proxy Authentication Required\r\n\r\n"
+                    )
+
+        class SocksProxyHandler(socketserver.BaseRequestHandler):
+            def handle(self):
+                request = self.request.recv(512)
+                if request.startswith(b"\x05\x02"):
+                    self.request.sendall(b"\x05\x00")
+
+        class ProxyServer(socketserver.ThreadingTCPServer):
+            allow_reuse_address = True
+            daemon_threads = True
+
+        servers = []
+        for handler in (HttpProxyHandler, SocksProxyHandler):
+            server = ProxyServer(("127.0.0.1", 0), handler)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            servers.append(server)
+
+        with TempEnv() as env:
+            bin_dir = env.home / "bin"
+            bin_dir.mkdir()
+            calls = env.home / "calls"
+            ss = bin_dir / "ss"
+            listener_lines = "\n".join(
+                f"LISTEN 0 1 127.0.0.1:{server.server_address[1]} 0.0.0.0:*"
+                for server in servers
+            )
+            ss.write_text(
+                f'#!/bin/sh\nprintf "%s\\n" "$@" >"$CALLS"\nprintf \'%s\\n\' \'{listener_lines}\'\n',
+                encoding="utf-8",
+            )
+            ss.chmod(0o755)
+            proc = subprocess.run(
+                [sys.executable, str(_PROXY_DISCOVER)],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                env={
+                    "PATH": f"{bin_dir}:/usr/bin:/bin",
+                    "CALLS": str(calls),
+                },
+            )
+            call_args = calls.read_text(encoding="utf-8").splitlines()
+
+        for server in servers:
+            server.shutdown()
+            server.server_close()
+
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        endpoints = {
+            "http": f"http://127.0.0.1:{servers[0].server_address[1]}",
+            "socks": f"socks5h://127.0.0.1:{servers[1].server_address[1]}",
+        }
+        self.assertEqual(set(proc.stdout.splitlines()), {f"{key}={value}" for key, value in endpoints.items()})
+        self.assertEqual(call_args, ["-H", "-ltn"])
 
 
 class TestShellAction(unittest.TestCase):

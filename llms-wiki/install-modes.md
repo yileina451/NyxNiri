@@ -74,7 +74,8 @@ pull 成功后**当前进程不做任何部署**：菜单路径与 `nyxuri updat
 
 ## AUR 包（`nyxuri/packaging/PKGBUILD`）
 
-- 单一 rolling 包 `nyxuri-git`，`source=("git+https://github.com/ech678/Nyxuri.git#branch=main")`
+- 默认源码仓库为 `https://github.com/yileina451/NyxNiri.git`，更新跟随 `main`；可通过 `NYXURI_REPO` 指定其他来源。
+- 单一 rolling 包 `nyxuri-git`，`source=("git+https://github.com/yileina451/NyxNiri.git#branch=main")`
 - `pkgver()` = `git describe --long --tags`
 - `package()`：cp nyxuri/configs/assets/install.sh 到 `/usr/share/nyxuri/`、`touch .system-install`、
   `/usr/bin/nyxuri` 软链到 install.sh、strip `__pycache__`

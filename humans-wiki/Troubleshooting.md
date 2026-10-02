@@ -23,7 +23,9 @@ Nyxuri used to uncomment `GBM_BACKEND=nvidia-drm` and `LIBVA_DRIVER_NAME=nvidia`
 
 Update and redeploy Nyxuri. The default configuration no longer selects a GPU driver, and deployment no longer rewrites environment variables based on PCI devices. A PCI listing cannot identify the active rendering GPU. Put any driver settings you need in `~/.config/niri/__custom__.kdl`.
 
-The old `ELECTRON_OZONE_PLATFORM_HINT "auto"` setting has also been removed; some older Electron apps may use XWayland instead. Normal deployment updates the main configuration but leaves personal overrides, personal presets, historical snapshots, and the current session environment alone. Log out and back in before checking the result.
+The current config sets `ELECTRON_OZONE_PLATFORM_HINT "auto"` for Electron apps spawned by niri. Niri selects its rendering GPU from the available DRM devices by default; hybrid laptops prefer the integrated GPU, while systems with only a discrete GPU use that available device. Only override this with the experimental `debug.render-drm-device` option when necessary; it takes a `/dev/dri/renderD*` node, not `WLR_DRM_DEVICES` or a `card*` node.
+
+Normal deployment updates the main configuration but leaves personal overrides, personal presets, historical snapshots, and the current session environment alone. Log out and back in before checking the result.
 
 ---
 

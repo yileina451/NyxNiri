@@ -74,6 +74,8 @@
 | :--- | :--- |
 | `nyxhelp` | 双栏交互式速查菜单 |
 | `nyxhelp keys` | Niri 快捷键 |
-| `nyxhelp proxy` | 代理控制（`proxy_on [port]`、`proxy_off`、`proxy_status`） |
+| `nyxhelp proxy` | 代理控制（`proxy_on [端口/地址]`、`proxy_off`、`proxy_status`） |
 | `nyxhelp pkg` | 包管理快捷指令（`up`、`in`、`se`、`un`、`clean`） |
 | `nyxhelp all` | 完整速查手册 |
+
+不带参数运行 `proxy_on` 会扫描本机 loopback TCP 监听端口，并用 HTTP CONNECT / SOCKS5 握手识别代理；无候选时先启动代理客户端，多个候选时用 `proxy_on <端口/地址>` 指定。开关会同步当前终端和 D-Bus / systemd 用户会话环境，供之后由这些服务启动的程序读取。直接由 Niri 或桌面壳派生的程序不一定继承到新值；已运行的浏览器或游戏也不会即时切换。要覆盖整个桌面流量，请启用代理客户端的 TUN / 全局模式。

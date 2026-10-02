@@ -17,7 +17,7 @@ _lang_is_zh() { [[ "${LANG:-}${LC_ALL:-}" == *zh* ]]; }
 say() { if _lang_is_zh; then printf '%s' "$1"; else printf '%s' "${2:-$1}"; fi; }
 
 CACHE_DIR="$HOME/.cache/nyxuri"
-BOOTSTRAP_URL="https://raw.githubusercontent.com/ech678/Nyxuri/main/install.sh"
+BOOTSTRAP_URL="https://raw.githubusercontent.com/yileina451/NyxNiri/main/install.sh"
 
 # Normalize XDG variables to prevent sandboxes (e.g. HOME=$(mktemp -d)) from leaking into the host
 if [ -n "${XDG_STATE_HOME:-}" ] && [[ "$XDG_STATE_HOME" != "$HOME/"* ]]; then
@@ -31,8 +31,8 @@ if [ -n "${XDG_CACHE_HOME:-}" ] && [[ "$XDG_CACHE_HOME" != "$HOME/"* ]]; then
 fi
 
 GIT_MIRROR_REGISTRY=(
-    "Official|https://github.com/ech678/Nyxuri.git"
-    "gh-proxy.org|https://gh-proxy.org/https://github.com/ech678/Nyxuri.git"
+    "Personal|https://github.com/yileina451/NyxNiri.git"
+    "gh-proxy.org|https://gh-proxy.org/https://github.com/yileina451/NyxNiri.git"
 )
 
 # NYXURI_REPO / NYXNIRI_REPO: 指定后单源直连(不回退官方),服务 fork 与内网镜像场景

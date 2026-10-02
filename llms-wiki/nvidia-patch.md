@@ -1,8 +1,14 @@
 # GPU 设备诊断与兼容边界
 
 默认 Niri 配置不再包含 `GBM_BACKEND`、`__GLX_VENDOR_LIBRARY_NAME`、
-`LIBVA_DRIVER_NAME`，部署不探测硬件或改写驱动变量。旧的
-`ELECTRON_OZONE_PLATFORM_HINT "auto"` 也已移除。
+`LIBVA_DRIVER_NAME`，部署不探测硬件或改写驱动变量。当前配置恢复了
+`ELECTRON_OZONE_PLATFORM_HINT "auto"`，供 Niri 启动的 Electron 程序使用。
+
+默认配置不指定合成器渲染设备，由 Niri 根据可用 DRM 设备自动选择；混合显卡
+笔记本默认优先使用核显，只有独显时则使用可用的独显。无需通过 PCI 探测或
+`WLR_DRM_DEVICES` 在安装时改写配置。只有确实要覆盖自动选择时，才手动设置
+Niri 的实验性 `debug.render-drm-device`，并使用 `/dev/dri/renderD*` 节点，
+不是 `card*` 节点。
 
 ## 诊断报告
 

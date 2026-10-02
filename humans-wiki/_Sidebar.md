@@ -16,4 +16,4 @@
 
 ---
 
-[GitHub Repository](https://github.com/ech678/Nyxuri)
+[GitHub Repository](https://github.com/yileina451/NyxNiri)

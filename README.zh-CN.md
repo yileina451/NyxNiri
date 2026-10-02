@@ -12,7 +12,7 @@
 <sub>基于 Niri 和 Noctalia V5 —— 然后闭嘴！</sub></p>
 
 <p>
-  <a href="https://github.com/ech678/Nyxuri/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/ech678/Nyxuri" alt="Stars" /></a>
+  <a href="https://github.com/yileina451/NyxNiri/stargazers"><img height="22" src="https://m3-markdown-badges.vercel.app/stars/3/3/yileina451/NyxNiri" alt="Stars" /></a>
   &nbsp;
   <a href="https://archlinux.org"><img height="22" src="https://ziadoua.github.io/m3-Markdown-Badges/badges/Arch/arch2.svg" alt="Arch Linux" /></a>
   &nbsp;
@@ -24,7 +24,7 @@
 </a>
 
 <p>
-  <sub><em><a href="https://nyxniri.com">官网</a> · 观看 <a href="https://www.bilibili.com/video/BV1c63n6dEEG">Bilibili 演示</a> · 参与 <a href="https://www.reddit.com/r/niri/comments/1vf53le/nyxniri_a_material_you_desktop_config_for_niri/">Reddit 讨论</a> · 查阅 <a href="https://github.com/ech678/Nyxuri/wiki/Home-zh">Wiki</a></em></sub>
+  <sub><em><a href="https://nyxniri.com">官网</a> · 观看 <a href="https://www.bilibili.com/video/BV1c63n6dEEG">Bilibili 演示</a> · 参与 <a href="https://www.reddit.com/r/niri/comments/1vf53le/nyxniri_a_material_you_desktop_config_for_niri/">Reddit 讨论</a> · 查阅 <a href="https://github.com/yileina451/NyxNiri/wiki/Home-zh">Wiki</a></em></sub>
 </p>
 <br />
 
@@ -50,14 +50,14 @@
 
 ```bash
 # 浅克隆：只拉最新快照；要完整历史去掉 --depth 1
-git clone --depth 1 https://github.com/ech678/Nyxuri.git ~/Nyxuri
-cd ~/Nyxuri && ./install.sh
+git clone --depth 1 https://github.com/yileina451/NyxNiri.git ~/NyxNiri
+cd ~/NyxNiri && ./install.sh
 ```
 
 ### 独立在线安装
 
 ```bash
-curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/ech678/Nyxuri/main/install.sh | bash
+curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/yileina451/NyxNiri/main/install.sh | bash
 ```
 
 > [!TIP]
@@ -68,11 +68,11 @@ curl -fsSL --connect-timeout 10 https://raw.githubusercontent.com/ech678/Nyxuri/
 
 ```bash
 # 通过 gh-proxy.org 独立安装
-curl -fsSL --connect-timeout 10 https://gh-proxy.org/https://raw.githubusercontent.com/ech678/Nyxuri/main/install.sh | bash
+curl -fsSL --connect-timeout 10 https://gh-proxy.org/https://raw.githubusercontent.com/yileina451/NyxNiri/main/install.sh | bash
 
 # 通过 gh-proxy.org 克隆仓库
-git clone --depth 1 https://gh-proxy.org/https://github.com/ech678/Nyxuri.git ~/Nyxuri
-cd ~/Nyxuri && ./install.sh
+git clone --depth 1 https://gh-proxy.org/https://github.com/yileina451/NyxNiri.git ~/NyxNiri
+cd ~/NyxNiri && ./install.sh
 ```
 </details>
 
@@ -98,44 +98,44 @@ Nyxuri
 
 配置采用原子物理替换。个人改动通过 Dunder 协议保留：任何文件名或目录名含 `__custom__` 的文件（如 `__custom__.kdl`、`__custom__.conf`）与 `monitor.kdl` 在更新时自动保留。
 
-自定义规则与部署后钩子见 [配置与自定义 (Wiki)](https://github.com/ech678/Nyxuri/wiki/Configuration-zh)。
+自定义规则与部署后钩子见 [配置与自定义 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Configuration-zh)。
 
 ## 预设
 
 预设叠在默认配置和你的 `__custom__` 之间，切换不会碰你的自定义改动。支持零件插槽化组合。
 
-官方预设清单、Parts 插槽机制与私有预设制作见 [预设手册 (Wiki)](https://github.com/ech678/Nyxuri/wiki/Presets-zh)。
+预设清单、Parts 插槽机制与私有预设制作见 [预设手册 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Presets-zh)。
 
 ## 快捷键
 
 核心快捷键通过 `shell-action.sh` 网关调度，保证合成器与桌面外壳解耦。快速查看：`nyxhelp keys`。
 
-完整窗口控制、多屏漫游按键表与全屏覆盖层见 [快捷键全景图 (Wiki)](https://github.com/ech678/Nyxuri/wiki/Keybindings-zh)。
+完整窗口控制、多屏漫游按键表与全屏覆盖层见 [快捷键全景图 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Keybindings-zh)。
 
 ## 扩展
 
 可选扩展包含动态取色 Fcitx5 皮肤（NyxMellow）、配套高清壁纸与动态视频包，以及和桌面主题一致的 Noctalia Greeter 登录界面。
 
-扩展模块安装与生命周期管理见 [扩展模块指南 (Wiki)](https://github.com/ech678/Nyxuri/wiki/CLI-Reference-zh#扩展)。
+扩展模块安装与生命周期管理见 [扩展模块指南 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/CLI-Reference-zh#扩展)。
 
 ## 工具
 
 `nyxuri` 管理安装、更新、配置快照与系统诊断，终端内随时可用 `nyxhelp` 速查。
 
-全量子命令、参数选项与 Shell 别名见 [CLI 命令手册 (Wiki)](https://github.com/ech678/Nyxuri/wiki/CLI-Reference-zh)。
+全量子命令、参数选项与 Shell 别名见 [CLI 命令手册 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/CLI-Reference-zh)。
 
 ## 故障排除
 
 遇到启动卡死、双显卡渲染异常或样式白屏时，优先运行 `./install.sh doctor`。
 
-详细排障步骤与完整清单见 [故障排除指南 (Wiki)](https://github.com/ech678/Nyxuri/wiki/Troubleshooting-zh)。
+详细排障步骤与完整清单见 [故障排除指南 (Wiki)](https://github.com/yileina451/NyxNiri/wiki/Troubleshooting-zh)。
 
 ## 致谢与社区
 
 **联系与社区：**
 - TG 频道：[@linux_ricing](https://t.me/linux_ricing)
 - QQ：`2040244628` · Linux Ricing 交流群：`631425889`
-- 赞助：[爱发电](https://afdian.com/a/Echoes678) · 问题反馈：[GitHub Issues](https://github.com/ech678/Nyxuri/issues)
+- 赞助：[爱发电](https://afdian.com/a/Echoes678) · 问题反馈：[GitHub Issues](https://github.com/yileina451/NyxNiri/issues)
 
 **协作与鸣谢：**
 - [Google Gemini](https://deepmind.google/technologies/gemini/) — 白嫖了谷歌一堆 token
